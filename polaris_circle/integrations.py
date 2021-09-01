@@ -1,9 +1,9 @@
-from polaris.integrations import CustodialIntegration
+from polaris.integrations import CustodyIntegration
 
 __all__ = ["CircleIntegration"]
 
 
-class CircleIntegration(CustodialIntegration):
+class CircleIntegration(CustodyIntegration):
     def __init__(self, api_key: str, api_url: str, wallet_id: str):
         self.api_key = api_key
         self.api_url = api_url

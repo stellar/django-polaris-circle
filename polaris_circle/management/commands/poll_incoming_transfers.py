@@ -2,13 +2,13 @@ import time
 import sys
 import signal
 from typing import Optional
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 from urllib3.exceptions import NewConnectionError
 
 from requests import RequestException
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
-from polaris.integrations import registered_custodial_integration as rci
+from polaris.integrations import registered_custody_integration as rci
 from polaris.models import Transaction
 from polaris.utils import getLogger, maybe_make_callback
 

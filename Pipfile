@@ -7,7 +7,7 @@ verify_ssl = true
 pipenv-setup = "*"
 
 [packages]
-django-polaris = "~=1.6"
+django-polaris = {editable = true, ref = "custodial-support", git = "https://github.com/stellar/django-polaris.git"}
 requests = "<3,>=2.0"
 
 [requires]
