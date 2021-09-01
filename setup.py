@@ -5,6 +5,9 @@ with open("README.rst") as f:
     long_description = f.read()
 
 setup(
+    dependency_links=[
+        "git+https://github.com/stellar/django-polaris.git@custodial-support#egg=django-polaris"
+    ],
     name="django-polaris",
     version="0.1.0",
     description="A circle-based custody implementation for django-polaris",
@@ -25,8 +28,7 @@ setup(
     ],
     keywords=["stellar", "sdf", "anchor", "polaris", "circle", "usdc", "custody"],
     include_package_data=True,
-    package_dir={"": "polaris_circle"},
-    packages=find_packages("polaris_circle"),
-    install_requires=["django-polaris~=1.6", "requests>=2.0,<3"],
+    packages=find_packages(),
+    install_requires=["requests>=2.0,<3"],
     python_requires=">=3.7",
 )
