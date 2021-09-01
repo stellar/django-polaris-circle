@@ -15,7 +15,7 @@ DEFAULT_NUM_RETRIES = 3
 DEFAULT_BACKOFF_FACTOR = 0.5
 IDENTIFICATION_HEADERS = {
     "User-Agent": "django-polaris-circle/CircleClient",
-    "X-Client-Name": "django-polaris-circle"
+    "X-Client-Name": "django-polaris-circle",
 }
 
 
@@ -60,7 +60,7 @@ class CircleClient:
             "Authorization": f"Bearer {self.api_key}",
             "Accept": "application/json",
             "Content-Type": "application/json",
-            **IDENTIFICATION_HEADERS
+            **IDENTIFICATION_HEADERS,
         }
         if session is None:
             session = Session()
@@ -76,7 +76,7 @@ class CircleClient:
         page_size: Optional[int] = None,
         wallet_id: Optional[str] = None,
         destination_wallet_id: Optional[str] = None,
-        source_wallet_id: Optional[str] = None
+        source_wallet_id: Optional[str] = None,
     ) -> dict:
         kwargs = {}
         if self.timeout:
@@ -87,9 +87,7 @@ class CircleClient:
                 from_datetime, "%Y-%m-%dT%H-%M-%SZ"
             )
         if to_datetime:
-            request_args["to"] = datetime.strftime(
-                to_datetime, "%Y-%m-%dT%H-%M-%SZ"
-            )
+            request_args["to"] = datetime.strftime(to_datetime, "%Y-%m-%dT%H-%M-%SZ")
         if wallet_id:
             if destination_wallet_id or source_wallet_id:
                 raise ValueError(
@@ -104,22 +102,18 @@ class CircleClient:
         if page_size:
             request_args["pageSize"] = page_size
         return self._session.get(
-            f"{self.url}/transfers",
-            params=request_args,
-            **kwargs
+            f"{self.url}/transfers", params=request_args, **kwargs
         ).json()
 
     def get_transfer(self, transfer_id: str):
-        return self._session.get(
-            f"{self.url}/transfers/{transfer_id}"
-        ).json()
+        return self._session.get(f"{self.url}/transfers/{transfer_id}").json()
 
     def create_transfer(
         self,
         idempotency_key: str,
         account: str,
         amount: Union[Decimal, str],
-        memo: Optional[str] = None
+        memo: Optional[str] = None,
     ) -> dict:
         optional_kwargs = {}
         if self.timeout:
@@ -128,22 +122,16 @@ class CircleClient:
             f"{self.url}/transfers",
             json={
                 "idempotencyKey": idempotency_key,
-                "source": {
-                    "type": "wallet",
-                    "id": self.wallet_id
-                },
+                "source": {"type": "wallet", "id": self.wallet_id},
                 "destination": {
                     "type": "blockchain",
                     "address": account,
                     "chain": "XLM",
-                    "addressTag": memo or ""
+                    "addressTag": memo or "",
                 },
-                "amount": {
-                    "amount": str(amount),
-                    "currency": "USD"
-                }
+                "amount": {"amount": str(amount), "currency": "USD"},
             },
-            **optional_kwargs
+            **optional_kwargs,
         ).json()
 
     def get_wallet(self) -> dict:
@@ -151,8 +139,7 @@ class CircleClient:
         if self.timeout:
             optional_kwargs["timeout"] = self.timeout
         return self._session.get(
-            f"{self.url}/wallets/{self.wallet_id}",
-            **optional_kwargs
+            f"{self.url}/wallets/{self.wallet_id}", **optional_kwargs
         ).json()
 
     def create_address(self, idempotency_key: str) -> dict:
@@ -161,12 +148,8 @@ class CircleClient:
             optional_kwargs["timeout"] = self.timeout
         return self._session.post(
             f"{self.url}/wallets/addresses",
-            json={
-                "idempotencyKey": idempotency_key,
-                "currency": "USD",
-                "chain": "XLM"
-            },
-            **optional_kwargs
+            json={"idempotencyKey": idempotency_key, "currency": "USD", "chain": "XLM"},
+            **optional_kwargs,
         ).json()
 
     def close(self) -> None:
@@ -189,4 +172,3 @@ class CircleClient:
             f"session={self._session}, "
             "]>"
         )
-

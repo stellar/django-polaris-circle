@@ -34,6 +34,7 @@ logger = getLogger(__name__)
 class Command(BaseCommand):
     """
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         signal.signal(signal.SIGINT, self.exit_gracefully)
@@ -59,7 +60,7 @@ class Command(BaseCommand):
             "-i",
             type=int,
             help="The number of seconds to wait before restarting command. "
-                 "Defaults to {}.".format(DEFAULT_INTERVAL),
+            "Defaults to {}.".format(DEFAULT_INTERVAL),
         )
 
     @staticmethod
@@ -100,7 +101,7 @@ class Command(BaseCommand):
                     continue
                 transaction = cls.get_matching_transaction(
                     transfer["destination"]["address"],
-                    transfer["destination"]["addressTag"]
+                    transfer["destination"]["addressTag"],
                 )
                 if not transaction:
                     continue
@@ -114,9 +115,7 @@ class Command(BaseCommand):
         try:
             transfers = client.get_transfers(to_datetime=before)
         except (RequestException, NewConnectionError):
-            logger.exception(
-                "an exception was raised making a GET /transfers request"
-            )
+            logger.exception("an exception was raised making a GET /transfers request")
             return
         if "data" not in transfers:
             logger.error(
@@ -135,13 +134,10 @@ class Command(BaseCommand):
             kind=Transaction.KIND.withdrawal,
         )
         send_filters = Q(
-            status=Transaction.STATUS.pending_sender,
-            kind=Transaction.KIND.send,
+            status=Transaction.STATUS.pending_sender, kind=Transaction.KIND.send,
         )
         transaction = Transaction.objects.filter(
-            withdraw_filters | send_filters,
-            receiving_anchor_account=account,
-            memo=memo
+            withdraw_filters | send_filters, receiving_anchor_account=account, memo=memo
         ).first()
         return transaction
 
