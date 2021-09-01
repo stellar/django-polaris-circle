@@ -2,7 +2,7 @@ import time
 import sys
 import signal
 from typing import Optional
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from urllib3.exceptions import NewConnectionError
 
 from requests import RequestException
@@ -12,7 +12,8 @@ from polaris.integrations import registered_custodial_integration as rci
 from polaris.models import Transaction
 from polaris.utils import getLogger, maybe_make_callback
 
-from polaris_circle import CircleIntegration, CircleClient
+from polaris_circle.integrations import CircleIntegration
+from polaris_circle.client import CircleClient
 
 
 TERMINATE = False
@@ -45,7 +46,7 @@ class Command(BaseCommand):
         """
         TODO: use logger
         """
-        print("Exiting process_pending_deposits...")
+        logger.info("Exiting process_pending_deposits...")
         module = sys.modules[__name__]
         module.TERMINATE = True
 
@@ -75,7 +76,12 @@ class Command(BaseCommand):
             raise CommandError(
                 "registered custodial integration is not an instance of CircleIntegration"
             )
-        with CircleClient(api_key=rci.api_key, wallet_id=rci.wallet_id) as client:
+        client_kwargs = {
+            "api_key": rci.api_key,
+            "api_url": rci.api_url,
+            "wallet_id": rci.wallet_id,
+        }
+        with CircleClient(**client_kwargs) as client:
             if options.get("loop"):
                 while True:
                     if TERMINATE:
@@ -89,14 +95,23 @@ class Command(BaseCommand):
     def poll_incoming_transfers(cls, client: CircleClient):
         get_transfers_before = datetime.now(timezone.utc)
         reached_processed_transfer = False
+        last_seen_transfer_id = None
         while not (reached_processed_transfer or TERMINATE):
             transfers = cls.get_transfers(client, get_transfers_before)
+            # failed to fetch transfers or all transfers have been processed
             if not transfers:
                 break
             for transfer in transfers["data"]:
+                # GET /transfers 'to' parameter is inclusive so we need to skip
+                # the first record returned in the response if we've seen it before.
+                if transfer["id"] == last_seen_transfer_id:
+                    continue
                 get_transfers_before = datetime.strptime(
                     transfer["createDate"], "%Y-%m-%dT%H:%M:%S.%fZ"
                 )
+                last_seen_transfer_id = transfer["id"]
+                # skip outgoing transactions
+                # TODO: confirm the only "status" for incoming transfers is "complete"
                 if transfer["destination"]["type"] != "wallet":
                     continue
                 transaction = cls.get_matching_transaction(

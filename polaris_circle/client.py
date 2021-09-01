@@ -5,8 +5,6 @@ from urllib3.util import Retry
 
 from requests import Session
 from requests.adapters import DEFAULT_POOLSIZE, HTTPAdapter
-from stellar_sdk.network import Network
-from polaris.settings import STELLAR_NETWORK_PASSPHRASE
 
 
 __all__ = ["CircleClient"]
@@ -23,6 +21,7 @@ class CircleClient:
     def __init__(
         self,
         api_key: str,
+        api_url: str,
         wallet_id: str,
         timeout: Optional[float] = None,
         pool_size: int = DEFAULT_POOLSIZE,
@@ -31,18 +30,12 @@ class CircleClient:
         session: Optional[Session] = None,
     ):
         self.api_key = api_key
+        self.url = api_url
         self.wallet_id = wallet_id
         self.timeout = timeout
         self.pool_size = pool_size
         self.num_retries = num_retries
         self.backoff_factor = backoff_factor
-
-        if STELLAR_NETWORK_PASSPHRASE == Network.PUBLIC_NETWORK_PASSPHRASE:
-            self.url = "https://api.circle.com/v1"
-        elif STELLAR_NETWORK_PASSPHRASE == Network.TESTNET_NETWORK_PASSPHRASE:
-            self.url = "https://api-sandbox.circle.com/v1"
-        else:
-            raise ValueError("invalid STELLAR_NETWORK_PASSPHRASE")
 
         retry = Retry(
             total=self.num_retries,
