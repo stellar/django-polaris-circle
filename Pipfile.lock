@@ -214,7 +214,7 @@
         "django-polaris": {
             "editable": true,
             "git": "https://github.com/stellar/django-polaris.git",
-            "ref": "812389a3fc306fc215a90e14bf163df197642ae3"
+            "ref": "df643b09e9e120fb49dd4d4b2ea68642a8feafaf"
         },
         "djangorestframework": {
             "hashes": [
