@@ -11,6 +11,7 @@ __all__ = ["CircleClient"]
 
 DEFAULT_NUM_RETRIES = 3
 DEFAULT_BACKOFF_FACTOR = 0.5
+DEFAULT_TIMEOUT = 10
 IDENTIFICATION_HEADERS = {
     "User-Agent": "django-polaris-circle/CircleClient",
     "X-Client-Name": "django-polaris-circle",
@@ -23,7 +24,7 @@ class CircleClient:
         api_key: str,
         api_url: str,
         wallet_id: str,
-        timeout: Optional[float] = None,
+        timeout: Optional[float] = DEFAULT_TIMEOUT,
         pool_size: int = DEFAULT_POOLSIZE,
         backoff_factor: float = DEFAULT_BACKOFF_FACTOR,
         num_retries: int = DEFAULT_NUM_RETRIES,
@@ -71,9 +72,6 @@ class CircleClient:
         destination_wallet_id: Optional[str] = None,
         source_wallet_id: Optional[str] = None,
     ) -> dict:
-        kwargs = {}
-        if self.timeout:
-            kwargs["timeout"] = self.timeout
         request_args = {}
         if from_datetime:
             request_args["from"] = datetime.strftime(
@@ -95,11 +93,13 @@ class CircleClient:
         if page_size:
             request_args["pageSize"] = page_size
         return self._session.get(
-            f"{self.url}/transfers", params=request_args, **kwargs
+            f"{self.url}/transfers", params=request_args, timeout=self.timeout
         ).json()
 
     def get_transfer(self, transfer_id: str):
-        return self._session.get(f"{self.url}/transfers/{transfer_id}").json()
+        return self._session.get(
+            f"{self.url}/transfers/{transfer_id}", timeout=self.timeout
+        ).json()
 
     def create_transfer(
         self,
@@ -108,9 +108,6 @@ class CircleClient:
         amount: Union[Decimal, str],
         memo: Optional[str] = None,
     ) -> dict:
-        optional_kwargs = {}
-        if self.timeout:
-            optional_kwargs["timeout"] = self.timeout
         return self._session.post(
             f"{self.url}/transfers",
             json={
@@ -124,7 +121,7 @@ class CircleClient:
                 },
                 "amount": {"amount": str(amount), "currency": "USD"},
             },
-            **optional_kwargs,
+            timeout=self.timeout,
         ).json()
 
     def get_wallet(self) -> dict:
@@ -132,7 +129,7 @@ class CircleClient:
         if self.timeout:
             optional_kwargs["timeout"] = self.timeout
         return self._session.get(
-            f"{self.url}/wallets/{self.wallet_id}", **optional_kwargs
+            f"{self.url}/wallets/{self.wallet_id}", timeout=self.timeout
         ).json()
 
     def create_address(self, idempotency_key: str) -> dict:
@@ -142,7 +139,7 @@ class CircleClient:
         return self._session.post(
             f"{self.url}/wallets/addresses",
             json={"idempotencyKey": idempotency_key, "currency": "USD", "chain": "XLM"},
-            **optional_kwargs,
+            timeout=self.timeout,
         ).json()
 
     def close(self) -> None:
