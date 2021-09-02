@@ -27,18 +27,14 @@ class CircleIntegration(CustodyIntegration):
         return response["data"]["address"], IdMemo(int(response["data"]["addressTag"]))
 
     def submit_deposit_transaction(self, transaction: Transaction) -> dict:
-        payment_amount = Decimal(
-            str(
-                round(
-                    Decimal(transaction.amount_in) - Decimal(transaction.amount_fee),
-                    transaction.asset.significant_decimals,
-                )
-            )
+        payment_amount = round(
+            Decimal(transaction.amount_in) - Decimal(transaction.amount_fee),
+            transaction.asset.significant_decimals,
         )
         return self.client.create_transfer(
             idempotency_key=str(transaction.id),
             account=transaction.to_address,
-            amount=payment_amount,
+            amount=str(payment_amount),
             memo=transaction.memo,
         )
 
