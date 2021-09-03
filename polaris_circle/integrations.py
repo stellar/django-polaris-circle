@@ -48,8 +48,6 @@ class CircleIntegration(CustodyIntegration):
             if response["status"] == "failed":
                 raise RuntimeError()
             if response["status"] == "complete":
-                if "transactionHash" not in response:
-                    raise RuntimeError()
                 transaction_hash = response["transactionHash"]
                 break
         with Server(horizon_url=settings.HORIZON_URI) as server:
