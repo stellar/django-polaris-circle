@@ -76,12 +76,7 @@ class Command(BaseCommand):
             raise CommandError(
                 "registered custodial integration is not an instance of CircleIntegration"
             )
-        client_kwargs = {
-            "api_key": rci.api_key,
-            "api_url": rci.api_url,
-            "wallet_id": rci.wallet_id,
-        }
-        with CircleClient(**client_kwargs) as client:
+        with rci.client as client:
             if options.get("loop"):
                 while True:
                     if TERMINATE:
