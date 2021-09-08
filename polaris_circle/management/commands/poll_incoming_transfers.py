@@ -114,6 +114,9 @@ class Command(BaseCommand):
                     transfer["destination"]["addressTag"],
                 )
                 if not transaction:
+                    logger.info(
+                        f"no transaction match found for transfer {transfer['id']}"
+                    )
                     continue
                 elif transaction.external_transaction_id:
                     reached_processed_transfer = True
@@ -153,6 +156,9 @@ class Command(BaseCommand):
 
     @staticmethod
     def process_matched_transaction(transaction: Transaction, transfer: dict):
+        logger.info(
+            f"matched transaction {transaction.id} with transfer {transfer['id']}"
+        )
         transaction.external_transaction_id = transfer["id"]
         transaction.stellar_transaction_id = transfer["transactionHash"]
         transaction.amount_in = transfer["amount"]["amount"]
