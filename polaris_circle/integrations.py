@@ -46,7 +46,10 @@ class CircleIntegration(CustodyIntegration):
         while not transaction_hash:
             response = self.client.get_transfer(response["id"])
             if response["status"] == "failed":
-                raise RuntimeError()
+                raise RuntimeError(
+                    "Circle failed to complete the transfer. "
+                    f"Error code: {response['errorCode']}"
+                )
             if response["status"] == "complete":
                 transaction_hash = response["transactionHash"]
                 break
