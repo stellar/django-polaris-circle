@@ -95,6 +95,7 @@ class Command(BaseCommand):
             transfers = cls.get_transfers(client, get_transfers_before)
             # failed to fetch transfers or all transfers have been processed
             if not transfers:
+                logger.info("no transfers found, returning")
                 break
             for transfer in transfers["data"]:
                 # GET /transfers 'to' parameter is inclusive so we need to skip
