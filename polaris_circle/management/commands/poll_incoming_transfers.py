@@ -92,16 +92,14 @@ class Command(BaseCommand):
         reached_processed_transfer = False
         last_seen_transfer_id = None
         while not (reached_processed_transfer or TERMINATE):
-            transfers = cls.get_transfers(client, get_transfers_before)
+            transfers = cls.get_transfers(
+                client, get_transfers_before, last_seen_transfer_id
+            )
             # failed to fetch transfers or all transfers have been processed
             if not transfers:
                 logger.info("no transfers found, returning")
                 break
-            # GET /transfers 'to' parameter is inclusive so we need to skip
-            # the first record returned in the response if we've seen it before.
-            if transfers["data"][0]["id"] == last_seen_transfer_id:
-                transfers["data"] = transfers["data"][1:]
-            for transfer in transfers["data"]:
+            for transfer in transfers:
                 if transfer["id"] == last_seen_transfer_id:
                     continue
                 get_transfers_before = datetime.strptime(
@@ -127,7 +125,9 @@ class Command(BaseCommand):
                 cls.process_matched_transaction(transaction, transfer)
 
     @staticmethod
-    def get_transfers(client: CircleClient, before: datetime) -> Optional[dict]:
+    def get_transfers(
+        client: CircleClient, before: datetime, last_seen_transfer_id: str
+    ) -> Optional[dict]:
         try:
             transfers = client.get_transfers(to_datetime=before)
         except (RequestException, NewConnectionError):
@@ -140,8 +140,12 @@ class Command(BaseCommand):
             return None
         elif len(transfers["data"]) == 0:
             return None
+        elif transfers["data"]["id"] == last_seen_transfer_id:
+            # GET /transfers 'to' parameter is inclusive so we need to skip
+            # the first record returned in the response if we've seen it before.
+            return transfers["data"][1:] if len(transfers["data"]) > 1 else None
         else:
-            return transfers
+            return transfers["data"]
 
     @staticmethod
     def get_matching_transaction(account: str, memo: str) -> Optional[Transaction]:
