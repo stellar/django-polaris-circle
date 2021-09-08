@@ -21,7 +21,7 @@ class CircleIntegration(CustodyIntegration):
         )
 
     def save_receiving_account_and_memo(
-        self, _request: Request, transaction: Transaction
+        self, request: Request, transaction: Transaction
     ):
         response = self.client.create_address(idempotency_key=str(transaction.id))
         transaction.receiving_anchor_account = response["data"]["address"]
@@ -52,6 +52,9 @@ class CircleIntegration(CustodyIntegration):
                 break
         with Server(horizon_url=settings.HORIZON_URI) as server:
             return server.transactions().transaction(transaction_hash).call()
+
+    def requires_third_party_signatures(self, transaction: Transaction) -> bool:
+        return False
 
     def create_destination_account(self, transaction: Transaction) -> dict:
         raise NotImplementedError()

@@ -29,6 +29,8 @@ The default amount of time to sleep before querying for transfers again
 Only used if the --loop option is specified.
 """
 
+CIRCLE_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+
 logger = getLogger(__name__)
 
 
@@ -102,7 +104,7 @@ class Command(BaseCommand):
                 if transfer["id"] == last_seen_transfer_id:
                     continue
                 get_transfers_before = datetime.strptime(
-                    transfer["createDate"], "%Y-%m-%dT%H:%M:%S.%fZ"
+                    transfer["createDate"], CIRCLE_DATETIME_FORMAT
                 )
                 last_seen_transfer_id = transfer["id"]
                 # skip outgoing transactions
@@ -126,14 +128,14 @@ class Command(BaseCommand):
             transfers = client.get_transfers(to_datetime=before)
         except (RequestException, NewConnectionError):
             logger.exception("an exception was raised making a GET /transfers request")
-            return
+            return None
         if "data" not in transfers:
             logger.error(
                 f"unexpected response format for GET /transfers request: {transfers}"
             )
-            return
+            return None
         elif len(transfers["data"]) == 0:
-            return
+            return None
         else:
             return transfers
 
