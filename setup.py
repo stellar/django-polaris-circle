@@ -8,7 +8,7 @@ setup(
     dependency_links=[
         "git+https://github.com/stellar/django-polaris.git@custodial-support#egg=django-polaris"
     ],
-    name="django-polaris",
+    name="django-polaris-circle",
     version="0.1.0",
     description="A circle-based custody implementation for django-polaris",
     long_description=long_description,
