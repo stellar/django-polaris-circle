@@ -100,7 +100,7 @@ class Command(BaseCommand):
             # GET /transfers 'to' parameter is inclusive so we need to skip
             # the first record returned in the response if we've seen it before.
             if transfers["data"][0]["id"] == last_seen_transfer_id:
-                transfers = transfers[1:]
+                transfers["data"] = transfers["data"][1:]
             for transfer in transfers["data"]:
                 if transfer["id"] == last_seen_transfer_id:
                     continue
