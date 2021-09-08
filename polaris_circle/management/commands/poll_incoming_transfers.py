@@ -98,7 +98,6 @@ class Command(BaseCommand):
             )
             # failed to fetch transfers or all transfers have been processed
             if not transfers:
-                logger.info("no transfers found, returning")
                 break
             for transfer in transfers:
                 if transfer["id"] == last_seen_transfer_id:

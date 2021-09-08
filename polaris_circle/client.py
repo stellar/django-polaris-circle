@@ -138,7 +138,7 @@ class CircleClient:
         if self.timeout:
             optional_kwargs["timeout"] = self.timeout
         return self._session.post(
-            f"{self.url}/wallets/addresses",
+            f"{self.url}/wallets/{self.wallet_id}/addresses",
             json={"idempotencyKey": idempotency_key, "currency": "USD", "chain": "XLM"},
             timeout=self.timeout,
         ).json()
