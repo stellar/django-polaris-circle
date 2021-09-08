@@ -4,6 +4,7 @@ import signal
 from typing import Optional
 from datetime import datetime, timezone
 from urllib3.exceptions import NewConnectionError
+from typing import List
 
 from requests import RequestException
 from django.db.models import Q
@@ -127,7 +128,7 @@ class Command(BaseCommand):
     @staticmethod
     def get_transfers(
         client: CircleClient, before: datetime, last_seen_transfer_id: str
-    ) -> Optional[dict]:
+    ) -> Optional[List[dict]]:
         try:
             transfers = client.get_transfers(to_datetime=before)
         except (RequestException, NewConnectionError):
@@ -140,7 +141,7 @@ class Command(BaseCommand):
             return None
         elif len(transfers["data"]) == 0:
             return None
-        elif transfers["data"]["id"] == last_seen_transfer_id:
+        elif transfers["data"][0]["id"] == last_seen_transfer_id:
             # GET /transfers 'to' parameter is inclusive so we need to skip
             # the first record returned in the response if we've seen it before.
             return transfers["data"][1:] if len(transfers["data"]) > 1 else None
