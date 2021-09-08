@@ -5,10 +5,13 @@ from polaris.models import Transaction, Asset
 from polaris.integrations import CustodyIntegration
 
 from polaris_circle.client import CircleClient
+from polaris.utils import getLogger
 from polaris import settings
 from stellar_sdk import Server
 
 __all__ = ["CircleIntegration"]
+
+logger = getLogger(__name__)
 
 
 class CircleIntegration(CustodyIntegration):
@@ -42,16 +45,24 @@ class CircleIntegration(CustodyIntegration):
             amount=str(payment_amount),
             memo=transaction.memo,
         )
-        transaction_hash = response.get("transactionHash")
+        if "data" not in response:
+            raise RuntimeError(
+                f"unexpected response format for POST /transfers request: {response}"
+            )
+        transaction_hash = response["data"].get("transactionHash")
         while not transaction_hash:
-            response = self.client.get_transfer(response["id"])
-            if response["status"] == "failed":
+            response = self.client.get_transfer(response["data"]["id"])
+            if "data" not in response:
+                raise RuntimeError(
+                    f"Unexpeted response format for GET /transfers/:id request: {response}"
+                )
+            if response["data"]["status"] == "failed":
                 raise RuntimeError(
                     "Circle failed to complete the transfer. "
-                    f"Error code: {response['errorCode']}"
+                    f"Error code: {response['data']['errorCode']}"
                 )
-            if response["status"] == "complete":
-                transaction_hash = response["transactionHash"]
+            if response["data"]["status"] == "complete":
+                transaction_hash = response["data"]["transactionHash"]
                 break
         with Server(horizon_url=settings.HORIZON_URI) as server:
             return server.transactions().transaction(transaction_hash).call()
