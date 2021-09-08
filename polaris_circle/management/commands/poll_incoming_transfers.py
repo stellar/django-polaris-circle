@@ -97,9 +97,11 @@ class Command(BaseCommand):
             if not transfers:
                 logger.info("no transfers found, returning")
                 break
+            # GET /transfers 'to' parameter is inclusive so we need to skip
+            # the first record returned in the response if we've seen it before.
+            if transfers[0]["id"] == last_seen_transfer_id:
+                transfers = transfers[1:]
             for transfer in transfers["data"]:
-                # GET /transfers 'to' parameter is inclusive so we need to skip
-                # the first record returned in the response if we've seen it before.
                 if transfer["id"] == last_seen_transfer_id:
                     continue
                 get_transfers_before = datetime.strptime(
