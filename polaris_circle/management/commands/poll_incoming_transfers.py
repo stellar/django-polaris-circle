@@ -149,17 +149,11 @@ class Command(BaseCommand):
 
     @staticmethod
     def get_matching_transaction(account: str, memo: str) -> Optional[Transaction]:
-        withdraw_filters = Q(
-            status=Transaction.STATUS.pending_user_transfer_start,
-            kind=Transaction.KIND.withdrawal,
-        )
-        send_filters = Q(
-            status=Transaction.STATUS.pending_sender, kind=Transaction.KIND.send,
-        )
-        transaction = Transaction.objects.filter(
-            withdraw_filters | send_filters, receiving_anchor_account=account, memo=memo
+        return Transaction.objects.filter(
+            kind__in=[Transaction.KIND.withdrawal, Transaction.KIND.send],
+            receiving_anchor_account=account,
+            memo=memo,
         ).first()
-        return transaction
 
     @staticmethod
     def process_matched_transaction(transaction: Transaction, transfer: dict):
