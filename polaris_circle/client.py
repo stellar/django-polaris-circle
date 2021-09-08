@@ -7,7 +7,7 @@ from requests import Session
 from requests.adapters import DEFAULT_POOLSIZE, HTTPAdapter
 
 
-__all__ = ["CircleClient"]
+__all__ = ["CircleClient", "CIRCLE_DATETIME_FORMAT"]
 
 DEFAULT_NUM_RETRIES = 3
 DEFAULT_BACKOFF_FACTOR = 0.5
@@ -16,6 +16,7 @@ IDENTIFICATION_HEADERS = {
     "User-Agent": "django-polaris-circle/CircleClient",
     "X-Client-Name": "django-polaris-circle",
 }
+CIRCLE_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class CircleClient:
@@ -75,10 +76,10 @@ class CircleClient:
         request_args = {}
         if from_datetime:
             request_args["from"] = datetime.strftime(
-                from_datetime, "%Y-%m-%dT%H-%M-%SZ"
+                from_datetime, CIRCLE_DATETIME_FORMAT
             )
         if to_datetime:
-            request_args["to"] = datetime.strftime(to_datetime, "%Y-%m-%dT%H-%M-%SZ")
+            request_args["to"] = datetime.strftime(to_datetime, CIRCLE_DATETIME_FORMAT)
         if wallet_id:
             if destination_wallet_id or source_wallet_id:
                 raise ValueError(

@@ -13,7 +13,7 @@ from polaris.models import Transaction
 from polaris.utils import getLogger, maybe_make_callback
 
 from polaris_circle.integrations import CircleIntegration
-from polaris_circle.client import CircleClient
+from polaris_circle.client import CircleClient, CIRCLE_DATETIME_FORMAT
 
 
 TERMINATE = False
@@ -28,8 +28,6 @@ DEFAULT_INTERVAL = 10
 The default amount of time to sleep before querying for transfers again
 Only used if the --loop option is specified.
 """
-
-CIRCLE_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 logger = getLogger(__name__)
 
