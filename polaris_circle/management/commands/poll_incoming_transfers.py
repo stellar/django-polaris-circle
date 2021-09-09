@@ -7,7 +7,6 @@ from urllib3.exceptions import NewConnectionError
 from typing import List
 
 from requests import RequestException
-from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 from polaris.integrations import registered_custody_integration as rci
 from polaris.models import Transaction
@@ -100,8 +99,6 @@ class Command(BaseCommand):
             if not transfers:
                 break
             for transfer in transfers:
-                if transfer["id"] == last_seen_transfer_id:
-                    continue
                 get_transfers_before = datetime.strptime(
                     transfer["createDate"], CIRCLE_DATETIME_FORMAT
                 )
