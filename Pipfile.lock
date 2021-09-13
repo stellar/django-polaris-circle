@@ -199,10 +199,10 @@
         },
         "django-environ": {
             "hashes": [
-                "sha256:6b3ce447f31c5a5144671d754baa0819c9bde2fb34dcdc05ba619a97f4567e5a",
-                "sha256:f63b6489ee2113239fe60cdf94efc93a2b42ac07aefb5b5182d401b4fa820374"
+                "sha256:20a5a3570333d3718c0a7ca834290ef850e2b96237ae4ca0a05823b3a0cb3363",
+                "sha256:b99bd3704221f8b717c8517d8146e53fdee509d9e99056be560060003b92213e"
             ],
-            "version": "==0.6.0"
+            "version": "==0.7.0"
         },
         "django-model-utils": {
             "hashes": [
@@ -214,7 +214,7 @@
         "django-polaris": {
             "editable": true,
             "git": "https://github.com/stellar/django-polaris.git",
-            "ref": "2b59d228172a47ec4194435e04d127071da2fa9b"
+            "ref": "f53a20ca4381502374ce6e5ab2d7c097f08961ee"
         },
         "djangorestframework": {
             "hashes": [
@@ -344,10 +344,10 @@
         },
         "sqlparse": {
             "hashes": [
-                "sha256:017cde379adbd6a1f15a61873f43e8274179378e95ef3fede90b5aa64d304ed0",
-                "sha256:0f91fd2e829c44362cbcfab3e9ae12e22badaa8a29ad5ff599f9ec109f0454e8"
+                "sha256:0c00730c74263a94e5a9919ade150dfc3b19c574389985446148402998287dae",
+                "sha256:48719e356bb8b42991bdbb1e8b83223757b93789c00910a616a071910ca4a64d"
             ],
-            "version": "==0.4.1"
+            "version": "==0.4.2"
         },
         "stellar-base-sseclient": {
             "hashes": [
