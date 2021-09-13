@@ -6,7 +6,7 @@ with open("README.rst") as f:
 
 setup(
     dependency_links=[
-        "git+https://github.com/stellar/django-polaris.git@2b59d228172a47ec4194435e04d127071da2fa9b#egg=django-polaris"
+        "git+https://github.com/stellar/django-polaris.git@f53a20ca4381502374ce6e5ab2d7c097f08961ee#egg=django-polaris"
     ],
     name="django-polaris-circle",
     version="0.1.0",
@@ -42,7 +42,7 @@ setup(
         "cryptography==3.4.8",
         "django==3.2.7",
         "django-cors-headers==3.8.0",
-        "django-environ==0.6.0",
+        "django-environ==0.7.0",
         "django-model-utils==4.1.1",
         "djangorestframework==3.12.4",
         "idna==3.2; python_version >= '3'",
@@ -54,7 +54,7 @@ setup(
         "pytz==2021.1",
         "requests==2.26.0",
         "six==1.16.0; python_version >= '2.7' and python_version not in '3.0, 3.1, 3.2, 3.3'",
-        "sqlparse==0.4.1",
+        "sqlparse==0.4.2",
         "stellar-base-sseclient==0.0.21",
         "stellar-sdk==4.1.1",
         "toml==0.10.2",
